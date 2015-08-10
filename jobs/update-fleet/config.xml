@@ -3,7 +3,32 @@
   <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>FLEET_REPO</name>
+          <description>fleetctl unit repository - use a full SSH git URL!</description>
+          <defaultValue>$FLEET_REPO</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>FLEET_UNIT_ROOT</name>
+          <description>Dir in $FLEET_REPO that contains the unit files.</description>
+          <defaultValue>$FLEET_UNIT_ROOT</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>RUNNING_USER</name>
+          <description>User running fleetctl units in the control tier (e.g.: core)</description>
+          <defaultValue>$RUNNING_USER</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>RUNNING_HOST</name>
+          <description>Host machine that this instance of Jenkins is running on. Typically set via ENV var using the AWS metadata service.</description>
+          <defaultValue>$RUNNING_HOST</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
@@ -14,26 +39,35 @@
   <builders>
     <hudson.tasks.Shell>
       <command># ensure that the SSH is usable in the container
-cp ${JENKINS_HOME}/.ssh/id_rsa  ${JENKINS_HOME}/.ssh/id_rsa &amp;&amp; chmod 0600 ${JENKINS_HOME}/.ssh/id_rsa
-
-# clone, cache &amp; figure out what units changed, if possible
-CLONED=$(git clone ${FLEET_REPO} fleetunits)
-CHANGED_UNITS=$(ls fleetunits)
-if [ ${CLONED} != 0 ]; then
-    CHANGED_UNITS=$(cd fleetunits &amp;&amp; git diff origin/master --name-only)
-    cd fleetunits &amp;&amp; git pull &amp;&amp; cd -
+if [ ! -d /root/.ssh ]; then
+    mkdir /root/.ssh
 fi
+cp ${JENKINS_HOME}/.ssh/id_rsa  /root/.ssh/id_rsa
+chown root:root /root/.ssh/id_rsa &amp;&amp; chmod 0600 /root/.ssh/id_rsa
+echo &quot;Host github.com\n\tStrictHostKeyChecking no\n&quot; &gt; /root/.ssh/config
+
+# clone &amp;&amp; cache the fleetunits
+(git clone ${FLEET_REPO} fleetunits) || (cd fleetunits &amp;&amp; git fetch &amp;&amp; cd -)
+
+# default list of changed unit files to ALL of the files in the given fleetctl unit root dir
+CHANGED_UNITS=&quot;$(cd fleetunits &amp;&amp; find ${FLEET_UNIT_ROOT} -type f -exec ls \{\} \;)&quot;
+CHANGED_UNITS=&quot;$(cd fleetunits &amp;&amp; git diff origin/master --name-only)&quot;
+cd fleetunits &amp;&amp; git pull &amp;&amp; cd -
 
 # remote dir
-UNIT_DIR=&quot;/home/${RUNNING_USER}/fleet_units&quot;
+REMOTE_DIR=&quot;/home/${RUNNING_USER}/fleetunits&quot;
+
+# cmd used in remote
+SSHCMD=&quot;ssh ${RUNNING_USER}@${RUNNING_HOST} -o StrictHostKeyChecking=no&quot;
 
 # ensure that the remote fleet units repo is setup
-ssh ${RUNNING_USER}@${RUNNING_HOST} &quot;(git clone ${FLEET_REPO} ${UNIT_DIR}) || (cd ${UNIT_DIR} &amp;&amp; git pull)&quot;
+${SSHCMD} &quot;(git clone ${FLEET_REPO} ${REMOTE_DIR}) || (cd ${REMOTE_DIR} &amp;&amp; git pull)&quot;
 
-for SERVICE in ${CHANGED_UNITS} do
-    ssh ${RUNNING_USER}@${RUNNING_HOST} &quot;fleetctl destroy ${SERVICE}&quot;
-    ssh ${RUNNING_USER}@${RUNNING_HOST} &quot;fleetctl submit ${UNITDIR}/${SERVICE}&quot;
-    ssh ${RUNNING_USER}@${RUNNING_HOST} &quot;fleetctl start ${SERVICE}&quot;
+for SERVICE_FILE in ${CHANGED_UNITS}; do
+    SERVICE=$(echo ${SERVICE_FILE#$FLEET_UNIT_ROOT/}|cut -d&apos;.&apos; -f1)
+    ${SSHCMD} &quot;fleetctl destroy ${SERVICE}&quot;
+    ${SSHCMD} &quot;fleetctl submit ${REMOTE_DIR}/${SERVICE_FILE}&quot;
+    ${SSHCMD} &quot;fleetctl start ${SERVICE}&quot;
 done</command>
     </hudson.tasks.Shell>
   </builders>
