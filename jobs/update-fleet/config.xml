@@ -20,6 +20,11 @@ Otherwise, using a local cache of $FLEET_REPO, attempts to figure out what fleet
           <defaultValue>$FLEET_UNIT_ROOT</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
+          <name>FLEET_REV</name>
+          <description>Revision of $FLEET_REPO to check out</description>
+          <defaultValue>$FLEET_REV</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
           <name>RUNNING_USER</name>
           <description>User running fleetctl units in the control tier (e.g.: core)</description>
           <defaultValue>$RUNNING_USER</defaultValue>
@@ -49,8 +54,12 @@ cp ${JENKINS_HOME}/.ssh/id_rsa  /root/.ssh/id_rsa
 chown root:root /root/.ssh/id_rsa &amp;&amp; chmod 0600 /root/.ssh/id_rsa
 echo &quot;Host github.com\n\tStrictHostKeyChecking no\n&quot; &gt; /root/.ssh/config
 
-# clone &amp;&amp; cache the fleetunits
+# clone &amp;&amp; cache the fleetunits, checkout rev
 (git clone ${FLEET_REPO} fleetunits) || (cd fleetunits &amp;&amp; git fetch &amp;&amp; cd -)
+if [ &quot;${FLEET_REV}&quot; = &quot;&quot; ] || [ -z $FLEET_REV ] || [ $FLEET_REV = &apos;$FLEET_REV&apos; ]; then
+    FLEET_REV=&quot;master&quot;
+fi
+git checkout ${FLEET_REV}
 
 # service list
 if $ALL; then
