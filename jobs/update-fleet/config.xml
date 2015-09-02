@@ -46,13 +46,7 @@ Otherwise, using a local cache of $FLEET_REPO, attempts to figure out what fleet
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># ensure that the SSH is usable in the container
-if [ ! -d /root/.ssh ]; then
-    mkdir /root/.ssh
-fi
-cp ${JENKINS_HOME}/.ssh/id_rsa  /root/.ssh/id_rsa
-chown root:root /root/.ssh/id_rsa &amp;&amp; chmod 0600 /root/.ssh/id_rsa
-echo &quot;Host github.com\n\tStrictHostKeyChecking no\n&quot; &gt; /root/.ssh/config
+      <command>${SETUPKEYS}
 
 # clone &amp;&amp; cache the fleetunits, checkout rev
 (git clone ${FLEET_REPO} fleetunits) || (cd fleetunits &amp;&amp; git fetch &amp;&amp; cd -)
@@ -79,9 +73,6 @@ fi
 
 # remote dir
 REMOTE_DIR=&quot;/home/${RUNNING_USER}/fleetunits&quot;
-
-# cmd used in remote
-SSHCMD=&quot;ssh ${RUNNING_USER}@${RUNNING_HOST} -o StrictHostKeyChecking=no&quot;
 
 # ensure that the remote fleet units repo is setup
 ${SSHCMD} &quot;(git clone ${FLEET_REPO} ${REMOTE_DIR}) || (cd ${REMOTE_DIR} &amp;&amp; git pull)&quot;
