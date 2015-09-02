@@ -42,7 +42,7 @@
           <string>SETUPKEYS</string>
           <string>if [ ! -d /root/.ssh ]; then mkdir /root/.ssh; fi; cp ${JENKINS_HOME}/.ssh/id_rsa  /root/.ssh/id_rsa &amp;&amp; chown root:root /root/.ssh/id_rsa &amp;&amp; chmod 0600 /root/.ssh/id_rsa &amp;&amp; echo &quot;Host github.com\n\tStrictHostKeyChecking no\n&quot; &gt; /root/.ssh/config</string>
           <string>SSHCMD</string>
-          <string>&quot;ssh ${RUNNING_USER}@${RUNNING_HOST} -o StrictHostKeyChecking=no&quot;</string>
+          <string>ssh ${RUNNING_USER}@${RUNNING_HOST} -o StrictHostKeyChecking=no</string>
         </tree-map>
       </envVars>
     </hudson.slaves.EnvironmentVariablesNodeProperty>
