@@ -2,9 +2,7 @@
 <project>
   <actions/>
   <description>KILLS THIS INSTANCE OF JENKINS&#xd;
-Whether or not it restarts &amp; how is up to the systemd unit that started it.&#xd;
-&#xd;
-Unit File: https://github.com/behance/mesos-systemd/blob/master/v1/fleet_units/jenkins.service</description>
+Whether or not it restarts &amp; how is up to the systemd unit that started it.</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>1</daysToKeep>
     <numToKeep>1</numToKeep>
@@ -15,7 +13,7 @@ Unit File: https://github.com/behance/mesos-systemd/blob/master/v1/fleet_units/j
   <properties/>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
-  <disabled>true</disabled>
+  <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
