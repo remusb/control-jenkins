@@ -23,9 +23,7 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#!/bin/bash
-
-eval ${SETUPKEYS}
+      <command>eval ${SETUPKEYS}
 cd $JENKINS_HOME
 
 git fetch --all
@@ -42,7 +40,7 @@ fi
 echo &quot;CHANGES DETECTED IN origin/${CURRENT_BRANCH}&quot;
 echo &quot;Updating to ${ORIGIN_SHA} ...&quot;
 git pull
-curl -X POST ${JENKINS_URL}/reload</command>
+curl -X POST 127.0.0.1:8080/reload</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
