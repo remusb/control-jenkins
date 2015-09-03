@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>KILLS THIS INSTANCE OF JENKINS&#xd;
-Whether or not it restarts &amp; how is up to the systemd unit that started it.</description>
+  <description></description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>1</daysToKeep>
     <numToKeep>1</numToKeep>
@@ -16,11 +15,34 @@ Whether or not it restarts &amp; how is up to the systemd unit that started it.<
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec>H * * * *</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>kill -9 `ps aux|grep jenkins.war|grep -v &quot;grep jenkins&quot;|awk &apos;{print $2}&apos;`</command>
+      <command>#!/bin/bash
+
+eval ${SETUPKEYS}
+cd $JENKINS_HOME
+
+git fetch --all
+CURRENT_BRANCH=$(git branch|grep &apos;*&apos;|cut -d&apos; &apos; -f2)
+LOCAL_SHA=$(git rev-parse ${CURRENT_BRANCH})
+ORIGIN_SHA=$(git rev-parse origin/${CURRENT_BRANCH})
+
+if [ &quot;$LOCAL_SHA&quot; == &quot;$ORIGIN_SHA&quot; ]; then
+    echo &quot;no changes detected in origin/${CURRENT_BRANCH}&quot;
+    exit 0
+fi
+
+
+echo &quot;CHANGES DETECTED IN origin/${CURRENT_BRANCH}&quot;
+echo &quot;Updating to ${ORIGIN_SHA} ...&quot;
+git pull
+curl -X POST ${JENKINS_URL}/reload</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

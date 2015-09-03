@@ -1,10 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>KILLS THIS INSTANCE OF JENKINS&#xd;
-Whether or not it restarts &amp; how is up to the systemd unit that started it.</description>
+  <description></description>
   <logRotator class="hudson.tasks.LogRotator">
-    <daysToKeep>1</daysToKeep>
+    <daysToKeep>-1</daysToKeep>
     <numToKeep>1</numToKeep>
     <artifactDaysToKeep>-1</artifactDaysToKeep>
     <artifactNumToKeep>-1</artifactNumToKeep>
@@ -16,11 +15,38 @@ Whether or not it restarts &amp; how is up to the systemd unit that started it.<
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec>* * * * *</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>kill -9 `ps aux|grep jenkins.war|grep -v &quot;grep jenkins&quot;|awk &apos;{print $2}&apos;`</command>
+      <command>#!/bin/bash
+
+echo &quot;===================ENVIRONMENT===================&quot;
+env
+echo &quot;=================================================&quot;
+
+MISSING=false
+if [ -z $RUNNING_USER ]; then
+  echo &apos;Missing $RUNNING_USER&apos;
+  MISSING=true
+fi
+if [ -z $RUNNING_HOST ]; then
+  echo &apos;Missing $RUNNING_HOST&apos;
+  MISSING=true
+fi
+
+if [ -z $HOST_SCRIPT_DIR ]; then
+  echo &apos;Missing $HOST_SCRIPT_DIR&apos;
+  MISSING=true
+fi
+
+if [ $MISSING == true ]; then
+  exit 1
+fi</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
