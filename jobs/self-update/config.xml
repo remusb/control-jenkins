@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>1</daysToKeep>
+    <numToKeep>1</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+eval ${SETUPKEYS}
+cd $JENKINS_HOME
+
+git fetch --all
+CURRENT_BRANCH=$(git branch|grep &apos;*&apos;|cut -d&apos; &apos; -f2)
+LOCAL_SHA=$(git rev-parse ${CURRENT_BRANCH})
+ORIGIN_SHA=$(git rev-parse origin/${CURRENT_BRANCH})
+
+if [ &quot;$LOCAL_SHA&quot; == &quot;$ORIGIN_SHA&quot; ]; then
+    echo &quot;no changes detected in origin/${CURRENT_BRANCH}&quot;
+    exit 0
+fi
+
+
+echo &quot;CHANGES DETECTED IN origin/${CURRENT_BRANCH}&quot;
+echo &quot;Updating to ${ORIGIN_SHA} ...&quot;
+git pull
+curl -X POST ${JENKINS_URL}/reload</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
