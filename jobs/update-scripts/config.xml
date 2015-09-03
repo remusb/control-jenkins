@@ -16,6 +16,8 @@
       <command>eval ${SETUPKEYS}
 
 eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || exit 0&apos;&quot;
+sleep 2
+
 eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/update-scripts.service&apos;&quot;
 eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;</command>
     </hudson.tasks.Shell>

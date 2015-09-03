@@ -16,6 +16,8 @@
       <command>eval ${SETUPKEYS}
 
 eval &quot;${SSHCMD} &apos;fleetctl destroy create-users || exit 0&apos;&quot;
+sleep 2
+
 eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/create-users.service&apos;&quot;
 eval &quot;${SSHCMD} &apos;fleetctl start create-users&apos;&quot;</command>
     </hudson.tasks.Shell>
