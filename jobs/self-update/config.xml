@@ -31,7 +31,7 @@ CURRENT_BRANCH=$(git branch|grep &apos;*&apos;|cut -d&apos; &apos; -f2)
 LOCAL_SHA=$(git rev-parse ${CURRENT_BRANCH})
 ORIGIN_SHA=$(git rev-parse origin/${CURRENT_BRANCH})
 
-if [ &quot;$LOCAL_SHA&quot; == &quot;$ORIGIN_SHA&quot; ]; then
+if [ $LOCAL_SHA = $ORIGIN_SHA ]; then
     echo &quot;no changes detected in origin/${CURRENT_BRANCH}&quot;
     exit 0
 fi
