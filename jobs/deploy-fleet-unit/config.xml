@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Perform a destroy-submit-start cycle for a given fleet unit.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>FLEET_UNIT</name>
+          <description>Name of the fleet unit as it appears in ${HOST_SCRIPT_DIR}.
+Does NOT require the &quot;.service&quot; extension.</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
+    exit 1
+fi
+
+eval ${SETUPKEYS}
+
+eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT} || exit 0&apos;&quot;
+sleep 2
+
+eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/fleet/${FLEET_UNIT}.service&apos;&quot;
+eval &quot;${SSHCMD} &apos;fleetctl start ${FLEET_UNIT}&apos;&quot;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

@@ -3,6 +3,7 @@
 *.log
 hudson.*.xml
 jenkins.*.xml
+queue.xml
 nodeMonitors.xml
 *.enc
 *.bak

@@ -7,6 +7,7 @@ run:
 	-e RUNNING_HOST=127.0.0.1                    \
 	-e RUNNING_USER=$$(whoami)                   \
 	-e HOST_SCRIPT_DIR=$${HOME}/mesos-systemd/v2 \
+	-e DEVELOPMENT="true"                        \
 	-u root                                      \
 	-p 8080:8080                                 \
 	jenkins
