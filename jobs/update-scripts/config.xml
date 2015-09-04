@@ -1,7 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description></description>
+  <description>Fire off the update-scripts util-unit script on ALL nodes.&#xd;
+This should force all nodes to pull new contents into /home/core/mesos-systemd&#xd;
+&#xd;
+The fleet unit that does this will then continue to run on all new nodes too.</description>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.scm.NullSCM"/>

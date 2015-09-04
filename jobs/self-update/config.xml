@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description></description>
+  <description>Periodically poll on jenkins jobs repo, pull &amp; reload configuration from disk if there are changes.</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>1</daysToKeep>
     <numToKeep>1</numToKeep>
@@ -23,8 +23,7 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>
-if [ ! -z $DEVELOPMENT ]; then
+      <command>if [ ! -z $DEVELOPMENT ]; then
     exit 0
 fi
 
