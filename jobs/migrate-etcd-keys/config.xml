@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Given a list of space delimited keys ($DIRS), this job will get all values from $OLDKV and sets them in this cluster.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>OLDKV</name>
+          <description>Source etcdctl server.</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>DIRS</name>
+          <description>Space delimited list of keys. Default keys are for mantra migrations.</description>
+          <defaultValue>/mantra/pools/mysql-read-cluster/proxies
+/mantra/pools/mysql-read-cluster/nodes
+/mantra/pools/mysql-write-cluster/proxies
+/mantra/pools/mysql-write-cluster/nodes</defaultValue>
+        </hudson.model.TextParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>eval ${SETUPKEYS}
+
+for key in $DIRS; do
+    echo ${key}
+    for i in `etcdctl --peers ${OLDKV} --no-sync ls ${key}`; do
+        OLDVAL=$(eval &quot;${SSHCMD} &apos;etcdctl --peers ${OLDKV} --no-sync get ${i}&apos;&quot;)
+        eval &quot;${SSHCMD} &apos;etcdctl set ${key} &apos;${OLDVAL}&apos;&apos;&quot;
+    done
+done</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
