@@ -12,11 +12,19 @@ The fleet unit that does this will then continue to run on all new nodes too.</d
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec>H * * * *</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>eval ${SETUPKEYS}
+      <command>if [ ! -z $DEVELOPMENT ]; then
+    exit 0
+fi
+
+eval ${SETUPKEYS}
 
 eval &quot;${SSHCMD} &apos;fleetctl destroy create-users || exit 0&apos;&quot;
 sleep 2
