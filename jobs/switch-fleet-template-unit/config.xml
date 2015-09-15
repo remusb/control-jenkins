@@ -38,10 +38,8 @@ e.g.: marathon@.service --&gt; marathon</description>
     exit 1
 fi
 
-echo &quot;${SSHCMD} \&quot;fleetctl list-units|grep ${FLEET_UNIT}|awk &apos;{print \$1}&apos;\&quot;&quot;
-
 eval ${SETUPKEYS}
-for unit in $(eval &quot;${SSHCMD} \&quot;fleetctl list-units|grep ${FLEET_UNIT}|awk &apos;{print \$1}&apos;\&quot;&quot;); do
+for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}|cut -f1 -s&apos;&quot;); do
     eval &quot;${SSHCMD} &apos;fleetctl ${COMMAND} ${unit}&apos;&quot;
 done</command>
     </hudson.tasks.Shell>
