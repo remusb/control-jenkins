@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Perform a fleetctl command on ALL template unit files for &lt;SERVICE&gt;@.service</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>FLEET_UNIT</name>
+          <description>Name of the fleet unit.
+e.g.: marathon@.service --&gt; marathon</description>
+          <defaultValue>marathon</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>COMMAND</name>
+          <description>command passed to fleetctl</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>stop</string>
+              <string>start</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
+    exit 1
+fi
+
+echo &quot;${SSHCMD} \&quot;fleetctl list-units|grep ${FLEET_UNIT}|awk &apos;{print \$1}&apos;\&quot;&quot;
+
+eval ${SETUPKEYS}
+for unit in $(eval &quot;${SSHCMD} \&quot;fleetctl list-units|grep ${FLEET_UNIT}|awk &apos;{print \$1}&apos;\&quot;&quot;); do
+    eval &quot;${SSHCMD} &apos;fleetctl ${COMMAND} ${unit}&apos;&quot;
+done</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
