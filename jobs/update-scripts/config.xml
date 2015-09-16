@@ -16,13 +16,11 @@ The fleet unit that does this will then continue to run on all new nodes too.</d
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>eval ${SETUPKEYS}
-
-eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || exit 0&apos;&quot;
-sleep 2
-
+      <command>eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
 eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/update-scripts.service&apos;&quot;
-eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;</command>
+eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts|cut -s -f5|uniq&apos;&quot;)&quot; != &quot;inactive&quot; ]</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
