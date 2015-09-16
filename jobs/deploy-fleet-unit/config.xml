@@ -10,8 +10,20 @@
           <name>FLEET_UNIT</name>
           <description>Name of the fleet unit as it appears in ${HOST_SCRIPT_DIR}.
 Does NOT require the &quot;.service&quot; extension.</description>
-          <defaultValue></defaultValue>
+          <defaultValue>capcom</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>FLEET_DIR</name>
+          <description>Director where template unit file is located.</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>fleet-local/proxy</string>
+              <string>fleet-local/control</string>
+              <string>fleet-local/worker</string>
+              <string>fleet-manual</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -50,7 +62,7 @@ done
 
 # submit newly updated template
 echo &quot;---- submitting new ${HOST_SCRIPT_DIR}/fleet-manual/${FLEET_UNIT}@.service ----&quot;
-eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/fleet-manual/${FLEET_UNIT}\\@.service&apos;&quot;
+eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}\\@.service&apos;&quot;
 
 # restart templated units one at a time
 for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}|cut -f1 -s&apos;&quot;); do
