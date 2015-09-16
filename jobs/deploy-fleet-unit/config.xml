@@ -43,11 +43,6 @@ if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
 fi
 eval ${SETUPKEYS}
 
-# destroy old template
-echo &quot;---- destroying old ${FLEET_UNIT}@.service ----&quot;
-(eval &quot;${SSHCMD} &apos;fleetctl list-unit-files|grep ${FLEET_UNIT}@.service&apos;&quot; 2&amp;&gt;/dev/null) || :
-eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT}@.service&apos;&quot;
-
 # update scripts before submitting again
 echo &quot;---- updating scripts ----&quot;
 eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
@@ -59,6 +54,15 @@ while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scrip
 do
     sleep 1
 done
+
+# ensure that unit file exists
+echo &quot;---- unit file&quot;
+eval &quot;${SSHCMD} &apos;cat ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}\\@.service&apos;&quot;
+
+# destroy old template
+echo &quot;---- destroying old ${FLEET_UNIT}@.service ----&quot;
+(eval &quot;${SSHCMD} &apos;fleetctl list-unit-files|grep ${FLEET_UNIT}@.service&apos;&quot; 2&amp;&gt;/dev/null) || :
+eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT}@.service&apos;&quot;
 
 # submit newly updated template
 echo &quot;---- submitting new ${HOST_SCRIPT_DIR}/fleet-manual/${FLEET_UNIT}@.service ----&quot;
