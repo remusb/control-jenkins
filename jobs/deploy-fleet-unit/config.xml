@@ -56,8 +56,9 @@ do
 done
 
 # ensure that unit file exists
-echo &quot;---- unit file&quot;
+echo &quot;---- verifying unit file&quot;
 eval &quot;${SSHCMD} &apos;cat ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}\\@.service&apos;&quot;
+if [ ! $? -eq 0 ]; then exit 1; fi
 
 # destroy old template
 echo &quot;---- destroying old ${FLEET_UNIT}@.service ----&quot;
