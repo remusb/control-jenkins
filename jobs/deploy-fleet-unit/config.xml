@@ -24,33 +24,47 @@ Does NOT require the &quot;.service&quot; extension.</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
+      <command>#!/bin/bash
+if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
+	echo &apos;FLEET_UNIT not provided.&apos;
     exit 1
 fi
-
 eval ${SETUPKEYS}
 
 # destroy old template
-$(eval &quot;${SSHCMD} &apos;fleetctl list-unit-files|grep ${FLEET_UNIT}@.service&apos;&quot;) || :
+echo &quot;---- destroying old ${FLEET_UNIT}@.service ----&quot;
+(eval &quot;${SSHCMD} &apos;fleetctl list-unit-files|grep ${FLEET_UNIT}@.service&apos;&quot; 2&amp;&gt;/dev/null) || :
 eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT}@.service&apos;&quot;
 
 # update scripts before submitting again
+echo &quot;---- updating scripts ----&quot;
 eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
-while [ ! -z $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;) ]; do sleep 1; done
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
 eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/update-scripts.service&apos;&quot;
 eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;
+echo &quot;--------&gt; submitted script update request to cluster...&quot;
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts|cut -s -f5|uniq&apos;&quot;)&quot; != &quot;inactive&quot; ]
+do
+    sleep 1
+done
 
 # submit newly updated template
+echo &quot;---- submitting new ${HOST_SCRIPT_DIR}/fleet-manual/${FLEET_UNIT}@.service ----&quot;
 eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/fleet-manual/${FLEET_UNIT}\\@.service&apos;&quot;
 
 # restart templated units one at a time
 for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}|cut -f1 -s&apos;&quot;); do
+    echo &quot;---- redeploying ${unit} ----&quot;
+	echo &quot;Destroying ${unit}&quot;
     eval &quot;${SSHCMD} &apos;fleetctl destroy ${unit}&apos;&quot;
+    while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
 
-    UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|cut -s -f4&apos;&quot;)
-    while [ $UNIT_STATUS == &quot;active&quot; ]; do sleep 1; done
-
+    echo &quot;Restarting ${unit}&quot;
     eval &quot;${SSHCMD} &apos;fleetctl start ${unit}&apos;&quot;
+    while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|cut -s -f4&apos;&quot;)&quot; != &quot;active&quot; ]
+    do
+        sleep 1
+    done
 done</command>
     </hudson.tasks.Shell>
   </builders>
