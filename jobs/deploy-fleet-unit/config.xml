@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Perform a destroy-submit-start cycle for a given fleet unit.</description>
+  <description>Perform a rolling deploy for a given fleet TEMPLATE unit.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
@@ -30,11 +30,28 @@ fi
 
 eval ${SETUPKEYS}
 
-eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT} || exit 0&apos;&quot;
-sleep 2
+# destroy old template
+eval &quot;${SSHCMD} &apos;fleetctl list-unit-files|grep ${FLEET_UNIT}@.service&apos;&quot;
+eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT}@.service&apos;&quot;
 
-eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/fleet/${FLEET_UNIT}.service&apos;&quot;
-eval &quot;${SSHCMD} &apos;fleetctl start ${FLEET_UNIT}&apos;&quot;</command>
+# update scripts before submitting again
+eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
+while [ ! -z $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;) ]; do sleep 1; done
+eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/update-scripts.service&apos;&quot;
+eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;
+
+# submit newly updated template
+eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/fleet-manual/${FLEET_UNIT}@.service&apos;&quot;
+
+# restart templated units one at a time
+for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}|cut -f1 -s&apos;&quot;); do
+    eval &quot;${SSHCMD} &apos;fleetctl destroy ${unit}&apos;&quot;
+
+    UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|cut -s -f4&apos;&quot;)
+    while [ $UNIT_STATUS == &quot;active&quot; ]; do sleep 1; done
+
+    eval &quot;${SSHCMD} &apos;fleetctl start ${unit}&apos;&quot;
+done</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
