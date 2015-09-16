@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Perform a fleetctl command on ALL template unit files for &lt;SERVICE&gt;@.service</description>
+  <description>Perform a fleetctl command on ALL ${TIER} units for ${FLEET_UNIT}@.service</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
@@ -22,6 +22,17 @@ e.g.: marathon@.service --&gt; marathon</description>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>TIER</name>
+          <description>Specifies the group of machines whos IPs will be used in the unit specifiers</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>control</string>
+              <string>proxy</string>
+              <string>worker</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -39,8 +50,9 @@ e.g.: marathon@.service --&gt; marathon</description>
 fi
 
 eval ${SETUPKEYS}
-for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}|cut -f1 -s&apos;&quot;); do
-    eval &quot;${SSHCMD} &apos;fleetctl ${COMMAND} ${unit}&apos;&quot;
+
+for ip in $(eval &quot;${SSHCMD} &apos;fleetctl list-machines|grep ${TIER}|cut -f2 -s&apos;&quot;); do
+    eval &quot;${SSHCMD} &apos;fleetctl ${COMMAND} ${FLEET_UNIT}@${ip}&apos;&quot;
 done</command>
     </hudson.tasks.Shell>
   </builders>
