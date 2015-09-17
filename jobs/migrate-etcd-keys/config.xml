@@ -49,7 +49,7 @@ for key in $DIRS; do
         key=$(echo $kv|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}key${AWK_POST}&quot;|cut -d: -f2-)
         value=$(echo $kv|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}value${AWK_POST}&quot;|cut -d: -f2-)
 		echo &quot;etcdctl set ${key} ${value}&quot;
-        if [ $DRY_RUN == &quot;true&quot; ]; then
+        if [ $DRY_RUN != &quot;true&quot; ]; then
             eval &quot;${SSHCMD} &apos;etcdctl set ${key} ${value}&apos;&quot;
         fi
     done
