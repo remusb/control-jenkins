@@ -8,17 +8,22 @@
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
           <name>OLDKV</name>
-          <description>Source etcdctl server.</description>
+          <description>Source etcdctl server (ETCD_PEERS endpoint works). Including port.</description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>DIRS</name>
-          <description>Space delimited list of keys. Default keys are for mantra migrations.</description>
+          <description>Space delimited list of keys. Default keys are for mantra migrations. Must have a / in the beginning!</description>
           <defaultValue>/mantra/pools/mysql-read-cluster/proxies
 /mantra/pools/mysql-read-cluster/nodes
 /mantra/pools/mysql-write-cluster/proxies
 /mantra/pools/mysql-write-cluster/nodes</defaultValue>
         </hudson.model.TextParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>DRY_RUN</name>
+          <description>Whether to just output the commands or actually run them.</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -31,13 +36,22 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>eval ${SETUPKEYS}
+      <command>#!/bin/bash
+
+eval ${SETUPKEYS}
+
+AWK_PRE=&apos;{n=split($0,a,&quot;,&quot;); for(i=1; i&lt;=n; i++){ where = match(a[i], /\&quot;&apos;
+AWK_POST=&apos;\&quot;/); if(where) {print a[i]} }}&apos;
 
 for key in $DIRS; do
-    echo ${key}
-    for i in `etcdctl --peers ${OLDKV} --no-sync ls ${key}`; do
-        OLDVAL=$(eval &quot;${SSHCMD} &apos;etcdctl --peers ${OLDKV} --no-sync get ${i}&apos;&quot;)
-        eval &quot;${SSHCMD} &apos;etcdctl set ${key} &apos;${OLDVAL}&apos;&apos;&quot;
+    kvpairs=$(curl -sS ${OLDKV}/v1/keys${key} | sed -e &apos;s/^\[//g&apos; | sed -e &apos;s/\]$//g&apos; |sed -e &apos;s/},/} /g&apos;)
+    for kv in $kvpairs; do
+        key=$(echo $kv|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}key${AWK_POST}&quot;|cut -d: -f2-)
+        value=$(echo $kv|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}value${AWK_POST}&quot;|cut -d: -f2-)
+		echo &quot;etcdctl set ${key} ${value}&quot;
+        if [ $DRY_RUN == &quot;true&quot; ]; then
+            eval &quot;${SSHCMD} &apos;etcdctl set ${key} ${value}&apos;&quot;
+        fi
     done
 done</command>
     </hudson.tasks.Shell>
