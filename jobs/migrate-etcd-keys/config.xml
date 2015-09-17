@@ -9,7 +9,7 @@
         <hudson.model.StringParameterDefinition>
           <name>OLDKV</name>
           <description>Source etcdctl server (ETCD_PEERS endpoint works). Including port.</description>
-          <defaultValue></defaultValue>
+          <defaultValue>${RUNNING_HOST}:2379</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>DIRS</name>
