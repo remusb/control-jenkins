@@ -44,10 +44,12 @@ AWK_PRE=&apos;{n=split($0,a,&quot;,&quot;); for(i=1; i&lt;=n; i++){ where = matc
 AWK_POST=&apos;\&quot;/); if(where) {print a[i]} }}&apos;
 
 for key in $DIRS; do
-    kvpairs=$(curl -sS ${OLDKV}/v1/keys${key} | sed -e &apos;s/^\[//g&apos; | sed -e &apos;s/\]$//g&apos; |sed -e &apos;s/},/} /g&apos;)
-    for kv in $kvpairs; do
-        key=$(echo $kv|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}key${AWK_POST}&quot;|cut -d: -f2-)
-        value=$(echo $kv|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}value${AWK_POST}&quot;|cut -d: -f2-)
+    ents=$(curl -sS ${OLDKV}/v1/keys${key}|sed -e &apos;s/^\[//g&apos;|sed -e &apos;s/\]$//g&apos;|sed -e &apos;s/},/} /g&apos;)
+    ents=$(echo &quot;&apos;$ents&apos;&quot;|sed -e &quot;s/},{/}{/g&quot;|tr -d &apos;[[:space:]]&apos;|sed -e &quot;s/}{/} {/g&quot;)
+    for entry in $ents; do
+        key=$(echo $entry|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}key${AWK_POST}&quot;|cut -d: -f2-)
+        key=$(echo $key| sed -e &apos;s/&quot;//g&apos;)
+        value=$(curl -sS ${OLDKV}/v1/keys${key}|sed -e &apos;s/^.*value&quot;://g&apos;|sed -e &apos;s/,&quot;index.*//g&apos;)
 		echo &quot;etcdctl set ${key} ${value}&quot;
         if [ $DRY_RUN != &quot;true&quot; ]; then
             eval &quot;${SSHCMD} &apos;etcdctl set ${key} ${value}&apos;&quot;
