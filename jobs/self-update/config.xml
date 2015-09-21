@@ -40,9 +40,10 @@ if [ $LOCAL_SHA = $ORIGIN_SHA ]; then
     exit 0
 fi
 
-
 echo &quot;CHANGES DETECTED IN origin/${CURRENT_BRANCH}&quot;
 echo &quot;Updating to ${ORIGIN_SHA} ...&quot;
+git add jobs
+git reset --hard
 git pull
 curl -X POST 127.0.0.1:8080/reload</command>
     </hudson.tasks.Shell>
