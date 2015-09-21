@@ -70,7 +70,7 @@ echo &quot;---- submitting new ${HOST_SCRIPT_DIR}/fleet-manual/${FLEET_UNIT}@.se
 eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}\\@.service&apos;&quot;
 
 # restart templated units one at a time
-for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}|cut -f1 -s&apos;&quot;); do
+for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}@|cut -f1 -s&apos;&quot;); do
     echo &quot;---- redeploying ${unit} ----&quot;
 	echo &quot;Destroying ${unit}&quot;
     eval &quot;${SSHCMD} &apos;fleetctl destroy ${unit}&apos;&quot;
