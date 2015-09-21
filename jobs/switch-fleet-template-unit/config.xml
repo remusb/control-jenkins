@@ -13,6 +13,29 @@ e.g.: marathon@.service --&gt; marathon</description>
           <defaultValue>marathon</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
+          <name>FLEET_DIR</name>
+          <description>Location of fleet unit</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>fleet-local/control</string>
+              <string>fleet-local/proxy</string>
+              <string>fleet-local/worker</string>
+              <string>fleet-manual</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>TIER</name>
+          <description>Specifies the group of machines whos IPs will be used in the unit specifiers. Machines to start this unit on.</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>control</string>
+              <string>proxy</string>
+              <string>worker</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
           <name>COMMAND</name>
           <description>command passed to fleetctl</description>
           <choices class="java.util.Arrays$ArrayList">
@@ -20,17 +43,6 @@ e.g.: marathon@.service --&gt; marathon</description>
               <string>stop</string>
               <string>start</string>
               <string>destroy</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>TIER</name>
-          <description>Specifies the group of machines whos IPs will be used in the unit specifiers</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>control</string>
-              <string>proxy</string>
-              <string>worker</string>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
@@ -46,11 +58,38 @@ e.g.: marathon@.service --&gt; marathon</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
+      <command>#!/bin/bash
+if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
     exit 1
 fi
 
 eval ${SETUPKEYS}
+
+# update scripts before submitting again
+echo &quot;---- updating scripts ----&quot;
+eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
+eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/update-scripts.service&apos;&quot;
+eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;
+echo &quot;--------&gt; submitted script update request to cluster...&quot;
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts|cut -s -f5|uniq&apos;&quot;)&quot; != &quot;inactive&quot; ]
+do
+    sleep 1
+done
+
+# ensure that unit file exists
+echo &quot;---- verifying unit file&quot;
+eval &quot;${SSHCMD} &apos;cat ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}\\@.service&apos;&quot;
+if [ ! $? -eq 0 ]; then exit 1; fi
+
+# destroy old template
+echo &quot;---- destroying old ${FLEET_UNIT}@.service ----&quot;
+(eval &quot;${SSHCMD} &apos;fleetctl list-unit-files|grep ${FLEET_UNIT}@.service&apos;&quot; 2&amp;&gt;/dev/null) || :
+eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT}@.service&apos;&quot;
+
+# submit newly updated template
+echo &quot;---- submitting new ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}@.service ----&quot;
+eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}@.service&apos;&quot;
 
 for ip in $(eval &quot;${SSHCMD} &apos;fleetctl list-machines|grep ${TIER}|cut -f2 -s&apos;&quot;); do
     eval &quot;${SSHCMD} &apos;fleetctl ${COMMAND} ${FLEET_UNIT}@${ip}&apos;&quot;
