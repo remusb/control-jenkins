@@ -42,11 +42,14 @@ PEERS=$(eval &quot;${SSHCMD} &apos;curl -sS ${OLDKV}/v2/machines|tr -d [:space:]
 for key in $DIRS; do
     subkeys=$(eval &quot;${SSHCMD} &apos;etcdctl --peers=${PEERS} ls ${key} --recursive&apos;&quot;)
     for subkey in $subkeys; do
+        # ensure that the subkey is not a dir
         value=$(eval &quot;${SSHCMD} &apos;etcdctl --peers=${PEERS} get ${subkey}&apos; 2&gt; /dev/null&quot;)
         if [ $? != 0 ]; then
             continue
         fi
 
+        # shell-escape double quotes
+        value=$(printf &apos;%q&apos; ${value})
 		echo &quot;etcdctl set ${subkey} &apos;${value}&apos;&quot;
         if [ $DRY_RUN != &quot;true&quot; ]; then
             eval &quot;${SSHCMD} etcdctl set ${subkey} \&apos;${value}\&apos;&quot;
