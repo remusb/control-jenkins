@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Given a list of space delimited keys ($DIRS), this job will get all values from $OLDKV and sets them in this cluster.</description>
+  <description>Given a list of space delimited keys ($DIRS), this job will recursively get all values from $OLDKV and set them in this cluster.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
@@ -13,11 +13,8 @@
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>DIRS</name>
-          <description>Space delimited list of keys. Default keys are for mantra migrations. Must have a / in the beginning!</description>
-          <defaultValue>/mantra/pools/mysql-read-cluster/proxies
-/mantra/pools/mysql-read-cluster/nodes
-/mantra/pools/mysql-write-cluster/proxies
-/mantra/pools/mysql-write-cluster/nodes</defaultValue>
+          <description>Space delimited list of keys. Default keys are for mantra migrations.</description>
+          <defaultValue>/mantra/pools</defaultValue>
         </hudson.model.TextParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>DRY_RUN</name>
@@ -40,19 +37,19 @@
 
 eval ${SETUPKEYS}
 
-AWK_PRE=&apos;{n=split($0,a,&quot;,&quot;); for(i=1; i&lt;=n; i++){ where = match(a[i], /\&quot;&apos;
-AWK_POST=&apos;\&quot;/); if(where) {print a[i]} }}&apos;
+PEERS=$(eval &quot;${SSHCMD} &apos;curl -sS ${OLDKV}/v2/machines|tr -d [:space:]&apos;&quot;)
 
 for key in $DIRS; do
-    ents=$(curl -sS ${OLDKV}/v1/keys${key}|sed -e &apos;s/^\[//g&apos;|sed -e &apos;s/\]$//g&apos;|sed -e &apos;s/},/} /g&apos;)
-    ents=$(echo &quot;&apos;$ents&apos;&quot;|sed -e &quot;s/},{/}{/g&quot;|tr -d &apos;[[:space:]]&apos;|sed -e &quot;s/}{/} {/g&quot;)
-    for entry in $ents; do
-        key=$(echo $entry|sed -e &apos;s/[{}]/&apos;&apos;/g&apos;|awk -v k=&quot;text&quot; &quot;${AWK_PRE}key${AWK_POST}&quot;|cut -d: -f2-)
-        key=$(echo $key| sed -e &apos;s/&quot;//g&apos;)
-        value=$(curl -sS ${OLDKV}/v1/keys${key}|sed -e &apos;s/^.*value&quot;://g&apos;|sed -e &apos;s/,&quot;index.*//g&apos;)
-		echo &quot;etcdctl set ${key} ${value}&quot;
+    subkeys=$(eval &quot;${SSHCMD} &apos;etcdctl --peers=${PEERS} ls ${key} --recursive&apos;&quot;)
+    for subkey in $subkeys; do
+        value=$(eval &quot;${SSHCMD} &apos;etcdctl --peers=${PEERS} get ${subkey}&apos; 2&gt; /dev/null&quot;)
+        if [ $? != 0 ]; then
+            continue
+        fi
+
+		echo &quot;etcdctl set ${subkey} &apos;${value}&apos;&quot;
         if [ $DRY_RUN != &quot;true&quot; ]; then
-            eval &quot;${SSHCMD} &apos;etcdctl set ${key} ${value}&apos;&quot;
+            eval &quot;${SSHCMD} etcdctl set ${subkey} \&apos;${value}\&apos;&quot;
         fi
     done
 done</command>
