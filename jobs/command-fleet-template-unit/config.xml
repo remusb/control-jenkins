@@ -72,7 +72,7 @@ while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scrip
 eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/update-scripts.service&apos;&quot;
 eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;
 echo &quot;--------&gt; submitted script update request to cluster...&quot;
-while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts|cut -s -f5|uniq&apos;&quot;)&quot; != &quot;inactive&quot; ]
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts|tr -s [:space:]|cut -s -f3|uniq&apos;&quot;)&quot; != &quot;inactive&quot; ]
 do
     sleep 1
 done
@@ -93,7 +93,7 @@ if [ &quot;${COMMAND}&quot; != &quot;destroy&quot; ]; then
     eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/${FLEET_DIR}/${FLEET_UNIT}@.service&apos;&quot;
 fi
 
-for ip in $(eval &quot;${SSHCMD} &apos;fleetctl list-machines|grep ${TIER}|cut -f2 -s&apos;&quot;); do
+for ip in $(eval &quot;${SSHCMD} &apos;fleetctl list-machines|grep ${TIER}|tr -s [:space:]|cut -f2 -s&apos;&quot;); do
     eval &quot;${SSHCMD} &apos;fleetctl ${COMMAND} ${FLEET_UNIT}@${ip}&apos;&quot;
 done</command>
     </hudson.tasks.Shell>
