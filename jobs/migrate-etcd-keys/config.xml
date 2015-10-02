@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Given a list of space delimited keys ($DIRS), this job will recursively get all values from $OLDKV and set them in this cluster.</description>
+  <description>Given a list of space delimited keys ($DIRS), this job will recursively get all values from $OLD_ETCD_ELB and set them in this cluster.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>OLDKV</name>
-          <description>Source etcdctl server (ETCD_PEERS endpoint works). Including port.</description>
+          <name>OLD_ETCD_ELB</name>
+          <description>Source etcdctl server (ETCD_PEERS endpoint works). Including port. Usually, the internal control ELB + 2379 of the ORIGINAL cluster during an A/B deploy.</description>
           <defaultValue>${RUNNING_HOST}:2379</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
@@ -37,7 +37,7 @@
 
 eval ${SETUPKEYS}
 
-PEERS=$(eval &quot;${SSHCMD} &apos;curl -sS ${OLDKV}/v2/machines|tr -d [:space:]&apos;&quot;)
+PEERS=$(eval &quot;${SSHCMD} &apos;curl -sS ${OLD_ETCD_ELB}/v2/machines|tr -d [:space:]&apos;&quot;)
 
 for key in $DIRS; do
     subkeys=$(eval &quot;${SSHCMD} &apos;etcdctl --peers=${PEERS} ls ${key} --recursive&apos;&quot;)
