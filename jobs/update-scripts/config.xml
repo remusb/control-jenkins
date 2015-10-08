@@ -16,7 +16,8 @@ The fleet unit that does this will then continue to run on all new nodes too.</d
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>eval ${SETUPKEYS}
+      <command>#!/bin/bash
+eval ${SETUPKEYS}
 
 # update scripts before submitting again
 echo &quot;---- updating scripts ----&quot;
