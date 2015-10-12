@@ -76,6 +76,8 @@ while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scrip
 do
     sleep 1
 done
+eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
 
 # ensure that unit file exists
 echo &quot;---- verifying unit file&quot;
