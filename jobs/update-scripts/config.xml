@@ -6,7 +6,22 @@ This should force all nodes to pull new contents into /home/core/mesos-systemd&#
 &#xd;
 The fleet unit that does this will then continue to run on all new nodes too.</description>
   <keepDependencies>false</keepDependencies>
-  <properties/>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>FORK</name>
+          <description>Username/Fork of mesos-systemd scripts.</description>
+          <defaultValue>behance</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SHA</name>
+          <description>Any working tree that exists in $FORK</description>
+          <defaultValue>master</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
@@ -19,6 +34,11 @@ The fleet unit that does this will then continue to run on all new nodes too.</d
       <command>#!/bin/bash
 eval ${SETUPKEYS}
 
+# set etcd values for cluster to reference
+echo &quot;---- setting scripts version in etcd ----&quot;
+eval &quot;${SSHCMD} &apos;etcdctl set /environment/SCRIPTS-FORK $FORK&apos;&quot;
+eval &quot;${SSHCMD} &apos;etcdctl set /environment/SCRIPTS-SHA $SHA&apos;&quot;
+
 # update scripts before submitting again
 echo &quot;---- updating scripts ----&quot;
 eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
@@ -30,8 +50,10 @@ while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scrip
 do
     sleep 1
 done
+echo &quot;--------&gt; cleaning up&quot;
 eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
-while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done</command>
+while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
+echo &quot;cluster synced&quot;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
