@@ -24,6 +24,11 @@ Does NOT require the &quot;.service&quot; extension.</description>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SLEEP</name>
+          <description>Sleep a certain amount of time before each unit restart.</description>
+          <defaultValue>0</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -84,6 +89,9 @@ for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}@
     do
         sleep 1
     done
+
+    echo &quot;waiting $SLEEP seconds before continuing...&quot;
+    sleep ${SLEEP}
 done</command>
     </hudson.tasks.Shell>
   </builders>
