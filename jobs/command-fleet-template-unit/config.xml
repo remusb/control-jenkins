@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Perform a fleetctl command on ALL ${TIER} units for ${FLEET_UNIT}@.service</description>
+  <description>Perform a fleetctl command on ALL ${TIER} units for ${FLEET_UNIT}@.service. This works regardless of whether the template unit instances have already been created or not. Use this job to start NEW units that were added to the scripts repo.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>

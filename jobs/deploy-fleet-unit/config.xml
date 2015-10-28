@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Perform a rolling deploy for a given fleet TEMPLATE unit.</description>
+  <description>Perform a rolling deploy for a given fleet TEMPLATE unit. i.e.: destroy, submit, start.&#xd;
+&#xd;
+Only works for units that have already been started in the cluster.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
