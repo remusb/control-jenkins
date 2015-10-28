@@ -67,18 +67,7 @@ eval ${SETUPKEYS}
 
 if [ &quot;${COMMAND}&quot; != &quot;destroy&quot; ]; then
     # update scripts before submitting again
-    echo &quot;---- updating scripts ----&quot;
-    eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
-    while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
-    eval &quot;${SSHCMD} &apos;fleetctl submit ${HOST_SCRIPT_DIR}/util-units/update-scripts.service&apos;&quot;
-    eval &quot;${SSHCMD} &apos;fleetctl start update-scripts&apos;&quot;
-    echo &quot;--------&gt; submitted script update request to cluster...&quot;
-    while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts|tr -s [:space:]|cut -s -f3|uniq&apos;&quot;)&quot; != &quot;inactive&quot; ]
-    do
-        sleep 1
-    done
-    eval &quot;${SSHCMD} &apos;fleetctl destroy update-scripts || :&apos;&quot;
-    while [ &quot;$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep update-scripts&apos;&quot;)&quot; != &quot;&quot; ]; do sleep 1; done
+    bash $JENKINS_HOME/scripts/submit-update-scripts.sh
 fi
 
 # ensure that unit file exists
