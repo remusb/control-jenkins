@@ -43,7 +43,7 @@ Does NOT require the &quot;.service&quot; extension.</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#!/bin/bash
+      <command>#!/bin/bash -e
 if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
 	echo &apos;FLEET_UNIT not provided.&apos;
     exit 1

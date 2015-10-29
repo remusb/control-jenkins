@@ -58,7 +58,7 @@ e.g.: marathon@.service --&gt; marathon</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#!/bin/bash
+      <command>#!/bin/bash -e
 if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
     exit 1
 fi

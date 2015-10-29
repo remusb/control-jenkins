@@ -31,7 +31,7 @@ The fleet unit that does this will then continue to run on all new nodes too.</d
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#!/bin/bash
+      <command>#!/bin/bash -e
 bash $JENKINS_HOME/scripts/submit-update-scripts.sh
 
 echo &quot;cluster synced&quot;</command>
