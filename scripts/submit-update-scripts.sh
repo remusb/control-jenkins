@@ -2,9 +2,13 @@
 eval ${SETUPKEYS}
 
 # set etcd values for cluster to reference
-echo "---- setting scripts version in etcd ----"
-eval "${SSHCMD} 'etcdctl set /environment/SCRIPTS-FORK $FORK'"
-eval "${SSHCMD} 'etcdctl set /environment/SCRIPTS-SHA $SHA'"
+if [ ! -z $FORK ] || [ ! -z $SHA ]; then
+    echo "---- setting scripts version in etcd ----"
+    eval "${SSHCMD} 'etcdctl set /environment/SCRIPTS-FORK $FORK'"
+    eval "${SSHCMD} 'etcdctl set /environment/SCRIPTS-SHA $SHA'"
+else
+    echo "---- skipping scripts version set"
+fi
 
 echo "---- updating scripts ----"
 eval "${SSHCMD} 'fleetctl destroy update-scripts || :'"
