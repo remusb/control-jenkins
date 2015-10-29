@@ -77,13 +77,18 @@ for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}@
     echo &quot;Restarting ${unit}&quot;
     eval &quot;${SSHCMD} &apos;fleetctl start ${unit}&apos;&quot;
     UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|tr -s [:space:]|cut -s -f3&apos;&quot;)
+    echo &quot;Waiting for $unit to become active...&quot;
     while [ &quot;$UNIT_STATUS&quot; != &quot;active&quot; ]
     do
+        UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|tr -s [:space:]|cut -s -f3&apos;&quot;)
         if [ &quot;$UNIT_STATUS&quot; == &quot;failed&quot; ]; then
+            echo &quot;----&gt; $unit failed!&quot;
+            eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}&quot;
             exit 1
         fi
         sleep 1
     done
+    echo &quot;----&gt; $unit active&quot;
 
     echo &quot;waiting $SLEEP seconds before continuing...&quot;
     sleep ${SLEEP}
