@@ -21,6 +21,10 @@ do
     UNIT_STATUSES=$(eval "${SSHCMD} 'fleetctl list-units|grep update-scripts|tr -s [:space:]|cut -s -f3|uniq'")
     for status in $UNIT_STATUSES; do
         if [ "$status" == "failed" ]; then
+            echo "One or more update-scripts units failed!"
+            echo "Check the cluster for bad nodes or update parameters."
+            eval "${SSHCMD} 'fleetctl list-units|grep update-scripts|grep failed'"
+            eval "${SSHCMD} 'fleetctl destroy update-scripts || :'"
             exit 1
         fi
     done
