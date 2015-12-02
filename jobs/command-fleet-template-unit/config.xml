@@ -78,7 +78,7 @@ if [ ! $? -eq 0 ]; then exit 1; fi
 # destroy old template
 echo &quot;---- destroying old ${FLEET_UNIT}@.service ----&quot;
 (eval &quot;${SSHCMD} &apos;fleetctl list-unit-files|grep ${FLEET_UNIT}@.service&apos;&quot; 2&amp;&gt;/dev/null) || :
-eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT}@.service&apos;&quot;
+(eval &quot;${SSHCMD} &apos;fleetctl destroy ${FLEET_UNIT}@.service&apos;&quot;) || :
 
 # submit newly updated template on non-destroy command
 if [ &quot;${COMMAND}&quot; != &quot;destroy&quot; ]; then
