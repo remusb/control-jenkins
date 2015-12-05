@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>SOURCE_DB</name>
+          <description>DB to copy</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DEST_DB</name>
+          <description>New DB</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>DB_PASS=$(eval &apos;$SSHCMD etcdctl get /FD/FD_DB_PASSWORD&apos;)
+DB_USER=$(eval &apos;$SSHCMD etcdctl get /FD/FD_DB_USERNAME&apos;)
+DB_URL=$(eval &apos;$SSHCMD etcdctl get /FD/FD_DB_PATH&apos;) # in URL:PORT format
+DB_HOST=${DB_URL%%:*}
+DB_PORT=${DB_URL##*:}
+
+eval $SSHCMD rm -rf /home/core/dumps
+eval $SSHCMD mkdir /home/core/dumps
+
+# DUMP SRC
+eval $SSHCMD \
+    &quot;&apos;  docker run --rm \
+        -v /home/core/dumps:/root/dumps/ mysql:latest \
+        sh -c \&quot;exec mysqldump -h$DB_HOST -P$DB_PORT -u$DB_USER -p&quot;$DB_PASS&quot; $SOURCE_DB &gt; /root/dumps/dump.sql\&quot; &apos;&quot;
+
+# CREATE DEST
+eval $SSHCMD \
+    &quot;&apos;  docker run --rm mysql:latest \
+        sh -c \&quot;exec mysqladmin -h$DB_HOST -P$DB_PORT -u$DB_USER -p&quot;$DB_PASS&quot; create $DEST_DB\&quot; &apos;&quot;
+
+# RESTORE SRC DUMP INTO DEST
+eval $SSHCMD \
+    &quot;&apos;  docker run --rm \
+        -v /home/core/dumps:/root/dumps/ mysql:latest \
+        sh -c \&quot;exec mysql -h$DB_HOST -P$DB_PORT -u$DB_USER -p&quot;$DB_PASS&quot; $DEST_DB &lt; /root/dumps/dump.sql\&quot; &apos;&quot;
+
+# DROP SRC
+#eval $SSHCMD \
+#    &quot;&apos;  docker run --rm mysql:latest \
+#        sh -c \&quot;exec mysqladmin -h$DB_HOST -P$DB_PORT -u$DB_USER -p&quot;$DB_PASS&quot; drop $SOURCE_DB\&quot; &apos;&quot;
+
+eval $SSHCMD rm -rf /home/core/dumps</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
