@@ -12,7 +12,7 @@ The fleet unit that does this will then continue to run on all new nodes too.</d
         <hudson.model.StringParameterDefinition>
           <name>FORK</name>
           <description>Username/Fork of mesos-systemd scripts.</description>
-          <defaultValue>behance</defaultValue>
+          <defaultValue>adobe-platform</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>SHA</name>
