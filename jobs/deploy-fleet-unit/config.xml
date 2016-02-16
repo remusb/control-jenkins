@@ -80,7 +80,7 @@ for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}@
     echo &quot;Waiting for $unit to become active...&quot;
     while [ &quot;$UNIT_STATUS&quot; != &quot;active&quot; ]
     do
-        UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|tr -s [:space:]|cut -s -f3&apos;&quot;)
+        UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|tr -s [:space:]|cut -s -f3&apos; || :&quot;)
         if [ &quot;$UNIT_STATUS&quot; == &quot;failed&quot; ]; then
             echo &quot;----&gt; $unit failed!&quot;
             eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}&quot;
