@@ -43,7 +43,8 @@ Does NOT require the &quot;.service&quot; extension.</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#!/bin/bash -e
+      <command>#!/bin/bash
+
 if [ -z $FLEET_UNIT ] || [ $FLEET_UNIT = &quot;&quot; ]; then
 	echo &apos;FLEET_UNIT not provided.&apos;
     exit 1
@@ -76,16 +77,24 @@ for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}@
 
     echo &quot;Restarting ${unit}&quot;
     eval &quot;${SSHCMD} &apos;fleetctl start ${unit}&apos;&quot;
-    UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|cut -s -f3&apos;&quot; || :)
+
+    eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}.*active&apos;&quot;
+    UNIT_ACTIVE=$?
+
     echo &quot;Waiting for $unit to become active...&quot;
-    while [ &quot;$UNIT_STATUS&quot; != &quot;active&quot; ]
+    while [ &quot;$UNIT_ACTIVE&quot; != &quot;0&quot; ]
     do
-        UNIT_STATUS=$(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}|cut -s -f3&apos;&quot; || :)
-        if [ &quot;$UNIT_STATUS&quot; == &quot;failed&quot; ]; then
+        eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}.*failed&apos;&quot;
+        UNIT_FAILED=$?
+
+        if [ &quot;$UNIT_FAILED&quot; == &quot;0&quot; ]; then
             echo &quot;----&gt; $unit failed!&quot;
             eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}&quot;
             exit 1
         fi
+
+        eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}.*active&apos;&quot;
+        UNIT_ACTIVE=$?
         sleep 1
     done
     echo &quot;----&gt; $unit active&quot;
