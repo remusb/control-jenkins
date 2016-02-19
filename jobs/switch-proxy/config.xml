@@ -30,23 +30,23 @@
     <hudson.tasks.Shell>
       <command>#eval ${SETUPKEYS}
 
-export COMMAND=&quot;nginx -g &apos;daemon off;&apos;&quot;
-export RESTART_SCRIPT=&quot;/restart_nginx_docker.sh&quot;
-export CONFIG=/etc/nginx/nginx.conf
-export IMAGE=nginx:1.9.5
-
 if [ &quot;$PROXY&quot; = &quot;haproxy&quot; ]; then
-    export COMMAND=&quot;haproxy -f /etc/haproxy/haproxy.cfg&quot;
     export RESTART_SCRIPT=&quot;/restart_haproxy_docker.sh&quot;
     export CONFIG=/etc/haproxy/haproxy.cfg
     export IMAGE=haproxy:1.5.14
+    eval ${SSHCMD} etcdctl set /CP/CP_PROXY_DOCKER_COMMAND &quot;haproxy -f /etc/haproxy/haproxy.cfg&quot;
+else
+    export RESTART_SCRIPT=&quot;/restart_nginx_docker.sh&quot;
+    export CONFIG=/etc/nginx/nginx.conf
+    export IMAGE=nginx:1.9.5
+    # eval&apos;ed literal quotes are hard
+    eval &quot;${SSHCMD} etcdctl set /CP/CP_PROXY_DOCKER_COMMAND \&quot;\\\&quot;nginx -g &apos;daemon off;&apos;\&quot;\\\&quot;&quot;
 fi
 
-eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY &apos;$PROXY&apos;&apos;&quot;
-eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY_DOCKER_COMMAND &apos;$COMMAND&apos;&apos;&quot;
-eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY_RESTART_SCRIPT &apos;$RESTART_SCRIPT&apos;&apos;&quot;
-eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY_CONFIG_FILE &apos;$CONFIG&apos;&apos;&quot;
-eval &quot;${SSHCMD} &apos;etcdctl set /images/proxy &apos;$IMAGE&apos;&apos;&quot;</command>
+eval ${SSHCMD} etcdctl set /CP/CP_PROXY $PROXY
+eval ${SSHCMD} etcdctl set /CP/CP_PROXY_RESTART_SCRIPT $RESTART_SCRIPT
+eval ${SSHCMD} etcdctl set /CP/CP_PROXY_CONFIG_FILE $CONFIG
+eval ${SSHCMD} etcdctl set /images/proxy $IMAGE</command>
     </hudson.tasks.Shell>
     <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.30">
       <configs>
