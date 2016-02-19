@@ -28,18 +28,19 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#eval ${SETUPKEYS}
+      <command>eval ${SETUPKEYS}
 
+# eval&apos;ed literal quotes are hard
+# pretty ham dard.
 if [ &quot;$PROXY&quot; = &quot;haproxy&quot; ]; then
     export RESTART_SCRIPT=&quot;/restart_haproxy_docker.sh&quot;
     export CONFIG=/etc/haproxy/haproxy.cfg
     export IMAGE=haproxy:1.5.14
-    eval ${SSHCMD} etcdctl set /CP/CP_PROXY_DOCKER_COMMAND &quot;haproxy -f /etc/haproxy/haproxy.cfg&quot;
+    eval &quot;${SSHCMD} etcdctl set /CP/CP_PROXY_DOCKER_COMMAND \&quot;\\\&quot;haproxy -f /etc/haproxy/haproxy.cfg\&quot;\\\&quot;&quot;
 else
     export RESTART_SCRIPT=&quot;/restart_nginx_docker.sh&quot;
     export CONFIG=/etc/nginx/nginx.conf
     export IMAGE=nginx:1.9.5
-    # eval&apos;ed literal quotes are hard
     eval &quot;${SSHCMD} etcdctl set /CP/CP_PROXY_DOCKER_COMMAND \&quot;\\\&quot;nginx -g &apos;daemon off;&apos;\&quot;\\\&quot;&quot;
 fi
 
