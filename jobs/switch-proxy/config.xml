@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>PROXY</name>
+          <description>Which proxy to switch capcom to.</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>nginx</string>
+              <string>haproxy</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#eval ${SETUPKEYS}
+
+export COMMAND=&quot;nginx -g &apos;daemon off;&apos;&quot;
+export RESTART_SCRIPT=&quot;/restart_nginx_docker.sh&quot;
+export CONFIG=/etc/nginx/nginx.conf
+export IMAGE=nginx:1.9.5
+
+if [ &quot;$PROXY&quot; = &quot;haproxy&quot; ]; then
+    export COMMAND=&quot;haproxy -f /etc/haproxy/haproxy.cfg&quot;
+    export RESTART_SCRIPT=&quot;/restart_haproxy_docker.sh&quot;
+    export CONFIG=/etc/haproxy/haproxy.cfg
+    export IMAGE=haproxy:1.5.14
+fi
+
+eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY &apos;$PROXY&apos;&apos;&quot;
+eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY_DOCKER_COMMAND &apos;$COMMAND&apos;&apos;&quot;
+eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY_RESTART_SCRIPT &apos;$RESTART_SCRIPT&apos;&apos;&quot;
+eval &quot;${SSHCMD} &apos;etcdctl set /CP/CP_PROXY_CONFIG_FILE &apos;$CONFIG&apos;&apos;&quot;
+eval &quot;${SSHCMD} &apos;etcdctl set /images/proxy &apos;$IMAGE&apos;&apos;&quot;</command>
+    </hudson.tasks.Shell>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.30">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>FLEET_UNIT=capcom
+FLEET_DIR=fleet-local/proxy
+SLEEP=20</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>deploy-fleet-unit</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+    <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.30">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+              <properties>FLEET_UNIT=proxy
+FLEET_DIR=fleet-local/proxy
+SLEEP=20</properties>
+            </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+          </configs>
+          <projects>deploy-fleet-unit</projects>
+          <condition>ALWAYS</condition>
+          <triggerWithNoParameters>false</triggerWithNoParameters>
+          <buildAllNodesWithLabel>false</buildAllNodesWithLabel>
+        </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
