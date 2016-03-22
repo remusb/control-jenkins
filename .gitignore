@@ -9,7 +9,6 @@ nodeMonitors.xml
 *.bak
 init.groovy.d/
 secret.*
-plugins/
 secrets/
 updates/
 userContent/
