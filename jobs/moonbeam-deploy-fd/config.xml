@@ -37,8 +37,8 @@
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-              <properties>key=images/capcom
-value=behance/capcom:${sha}</properties>
+              <properties>key=images/fd
+value=behance/flight-director:${sha}</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
           <projects>set-etcd-kv</projects>
@@ -73,8 +73,8 @@ value=behance/capcom:${sha}</properties>
         <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
-              <properties>FLEET_UNIT=capcom
-FLEET_DIR=fleet-local/proxy
+              <properties>FLEET_UNIT=flight-director
+FLEET_DIR=fleet-local/control
 SLEEP=5</properties>
             </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
           </configs>
