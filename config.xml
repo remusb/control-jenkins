@@ -6,34 +6,38 @@
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
   <authorizationStrategy class="hudson.security.ProjectMatrixAuthorizationStrategy">
-    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:bunduc</permission>
-    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:bunduc</permission>
-    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:bunduc</permission>
-    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:bunduc</permission>
-    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:bunduc</permission>
-    <permission>hudson.model.Computer.Build:bunduc</permission>
-    <permission>hudson.model.Computer.Configure:bunduc</permission>
-    <permission>hudson.model.Computer.Connect:bunduc</permission>
-    <permission>hudson.model.Computer.Create:bunduc</permission>
-    <permission>hudson.model.Computer.Delete:bunduc</permission>
-    <permission>hudson.model.Computer.Disconnect:bunduc</permission>
-    <permission>hudson.model.Hudson.Administer:bunduc</permission>
-    <permission>hudson.model.Hudson.Read:bunduc</permission>
-    <permission>hudson.model.Hudson.RunScripts:bunduc</permission>
-    <permission>hudson.model.Item.Build:bunduc</permission>
-    <permission>hudson.model.Item.Cancel:bunduc</permission>
-    <permission>hudson.model.Item.Configure:bunduc</permission>
-    <permission>hudson.model.Item.Create:bunduc</permission>
-    <permission>hudson.model.Item.Delete:bunduc</permission>
-    <permission>hudson.model.Item.Discover:bunduc</permission>
-    <permission>hudson.model.Item.Read:bunduc</permission>
-    <permission>hudson.model.Item.Workspace:bunduc</permission>
-    <permission>hudson.model.Run.Delete:bunduc</permission>
-    <permission>hudson.model.Run.Update:bunduc</permission>
-    <permission>hudson.model.View.Configure:bunduc</permission>
-    <permission>hudson.model.View.Create:bunduc</permission>
-    <permission>hudson.model.View.Delete:bunduc</permission>
-    <permission>hudson.model.View.Read:bunduc</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Computer.Build:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Computer.Configure:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Computer.Connect:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Computer.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Computer.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Computer.Disconnect:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Hudson.Administer:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Hudson.Read:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Hudson.RunScripts:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Build:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Cancel:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Configure:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Discover:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Read:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Item.Workspace:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Run.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Run.Update:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.View.Configure:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.View.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.View.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.View.Read:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+    <permission>hudson.model.Hudson.Read:[CONTROL_JENKINS_RO_GROUP]</permission>
+    <permission>hudson.model.Item.Discover:[CONTROL_JENKINS_RO_GROUP]</permission>
+    <permission>hudson.model.Item.Read:[CONTROL_JENKINS_RO_GROUP]</permission>
+    <permission>hudson.model.View.Read:[CONTROL_JENKINS_RO_GROUP]</permission>
   </authorizationStrategy>
 <securityRealm class="org.jenkinsci.plugins.saml.SamlSecurityRealm" plugin="saml@0.4-SNAPSHOT">
     <idpMetadata>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;md:EntityDescriptor xmlns:md=&quot;urn:oasis:names:tc:SAML:2.0:metadata&quot; entityID=&quot;http://www.okta.com/exk17avsncxCQKDI41d8&quot;&gt;&lt;md:IDPSSODescriptor WantAuthnRequestsSigned=&quot;true&quot; protocolSupportEnumeration=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;&gt;&lt;md:KeyDescriptor use=&quot;signing&quot;&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;ds:X509Data&gt;&lt;ds:X509Certificate&gt;MIIDpjCCAo6gAwIBAgIGAUtCTt0xMA0GCSqGSIb3DQEBBQUAMIGTMQswCQYDVQQGEwJVUzETMBEG
