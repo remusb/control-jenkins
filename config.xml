@@ -40,23 +40,7 @@
     <permission>hudson.model.View.Read:[CONTROL_JENKINS_RO_GROUP]</permission>
   </authorizationStrategy>
 <securityRealm class="org.jenkinsci.plugins.saml.SamlSecurityRealm" plugin="saml@0.4-SNAPSHOT">
-    <idpMetadata>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;md:EntityDescriptor xmlns:md=&quot;urn:oasis:names:tc:SAML:2.0:metadata&quot; entityID=&quot;http://www.okta.com/exk17avsncxCQKDI41d8&quot;&gt;&lt;md:IDPSSODescriptor WantAuthnRequestsSigned=&quot;true&quot; protocolSupportEnumeration=&quot;urn:oasis:names:tc:SAML:2.0:protocol&quot;&gt;&lt;md:KeyDescriptor use=&quot;signing&quot;&gt;&lt;ds:KeyInfo xmlns:ds=&quot;http://www.w3.org/2000/09/xmldsig#&quot;&gt;&lt;ds:X509Data&gt;&lt;ds:X509Certificate&gt;MIIDpjCCAo6gAwIBAgIGAUtCTt0xMA0GCSqGSIb3DQEBBQUAMIGTMQswCQYDVQQGEwJVUzETMBEG
-A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
-MBIGA1UECwwLU1NPUHJvdmlkZXIxFDASBgNVBAMMC2Fkb2JlLXN0YWdlMRwwGgYJKoZIhvcNAQkB
-Fg1pbmZvQG9rdGEuY29tMB4XDTE1MDEzMTIzMjI1OVoXDTQ1MDEzMTIzMjM1OVowgZMxCzAJBgNV
-BAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMQ0wCwYD
-VQQKDARPa3RhMRQwEgYDVQQLDAtTU09Qcm92aWRlcjEUMBIGA1UEAwwLYWRvYmUtc3RhZ2UxHDAa
-BgkqhkiG9w0BCQEWDWluZm9Ab2t0YS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
-AQC2WnI1ZmOIDONEcBZmOmtgvo2DI6ijjxIecq+b7b9314zToLUtGnF1dXFjh9YgJz6WroGoSqOQ
-vbZ1Vi9FlFlsJPmJ62NHouNKO6ZHuFqJUQ1wtw10EMO6gAhJ2ws4VsfwKSL5CEhDXdpvlk/7NZ3O
-ADOOoas0D9cQla4ytMXgVcBLiiKCSJb5eK8kzKx7+75VpshdcgRISOyZhcy79rMjoH8al2wVteDo
-GhbNx8mB/YhBthLwCprjE4Pp6MgXpAe1gFlfa7rv81Esio4e3gMsHH3WIN1qq56Ya7ZFDjyuXHqh
-S2YftP7MT97rGHUldibvLOAsiKS42XUWcJSQTlQ7AgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAKNs
-LXgMsFJSfcwnQPpbcMi5WRnTWQOAV3ViDb0TB17QKlJFfSTdViwK2URZMp6mALgvHTS3mRNygbL/
-Fgxf2TVx0bWgaZmIzyba4e+kVWjIiERIa4JbnMIdptJcBHrckJY85wpHhb36bsieit14XY9p/Eph
-m217U8T/5bLaYe9LgewUf2Pdr/7KjFUUkJjEVYgBD8AIyTY0vsaiJul96xFPjUa8VtaT2uKu0OGh
-kRlMdMEMqzF1KqzFvbLtDBcQi35BUeqXMh0ptSquR2Pj5K5lDq7RmxK7tY9xUeMvuY8UmjaaLnGO
-ainVQh3c1tEsT9Zn0tXQhtmQyvF/TLGE5pA=&lt;/ds:X509Certificate&gt;&lt;/ds:X509Data&gt;&lt;/ds:KeyInfo&gt;&lt;/md:KeyDescriptor&gt;&lt;md:NameIDFormat&gt;urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress&lt;/md:NameIDFormat&gt;&lt;md:NameIDFormat&gt;urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified&lt;/md:NameIDFormat&gt;&lt;md:SingleSignOnService Binding=&quot;urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&quot; Location=&quot;https://adobe-stage.okta.com/app/template_saml_2_0/exk17avsncxCQKDI41d8/sso/saml&quot;/&gt;&lt;md:SingleSignOnService Binding=&quot;urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect&quot; Location=&quot;https://adobe-stage.okta.com/app/template_saml_2_0/exk17avsncxCQKDI41d8/sso/saml&quot;/&gt;&lt;/md:IDPSSODescriptor&gt;&lt;/md:EntityDescriptor&gt;</idpMetadata>
+    <idpMetadata>[CONTROL_JENKINS_OKTA_METADATA]</idpMetadata>
     <uidAttributeName>uid</uidAttributeName>
     <displayNameAttributeName>uid</displayNameAttributeName>
     <groupsAttributeName>group</groupsAttributeName>
