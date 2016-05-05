@@ -45,7 +45,7 @@ echo &quot;Updating to ${ORIGIN_SHA} ...&quot;
 git add jobs
 git reset --hard
 git pull
-${HOST_SCRIPT_DIR}/util/jenkins_update_config.sh /home/core/control-jenkins
+${HOST_SCRIPT_DIR}/util/jenkins_update_config.sh ${JENKINS_HOME}
 curl -X POST 127.0.0.1:8080/reload</command>
     </hudson.tasks.Shell>
   </builders>
