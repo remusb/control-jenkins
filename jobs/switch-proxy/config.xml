@@ -30,23 +30,36 @@
     <hudson.tasks.Shell>
       <command>eval ${SETUPKEYS}
 
+SCRIPT_KEY=&quot;/CP/CP_PROXY_RESTART_SCRIPT&quot;
+CFG_FILE_KEY=&quot;/CP/CP_PROXY_CONFIG_FILE&quot;
+PROXY_NAME_KEY=&quot;/CP/CP_PROXY&quot;
+DOCKER_CMD_KEY=&quot;/CP/CP_PROXY_DOCKER_COMMAND&quot;
+# v3 vs v2 compat.
+eval &apos;$SSHCMD systemctl cat bootstrap|grep v3&apos;
+if [ &quot;$?&quot;==&quot;0&quot; ]; then
+    SCRIPT_KEY=&quot;/capcom/config/proxy-restart-script&quot;
+    CFG_FILE_KEY=&quot;/capcom/config/proxy-config-file&quot;
+    PROXY_NAME_KEY=&quot;/capcom/config/proxy&quot;
+    DOCKER_CMD_KEY=&quot;/capcom/config/proxy-docker-command&quot;
+fi
+
 # eval&apos;ed literal quotes are hard
 # pretty ham dard.
 if [ &quot;$PROXY&quot; = &quot;haproxy&quot; ]; then
     export RESTART_SCRIPT=&quot;/restart_haproxy_docker.sh&quot;
     export CONFIG=/etc/haproxy/haproxy.cfg
     export IMAGE=haproxy:1.5.14
-    eval &quot;${SSHCMD} etcdctl set /CP/CP_PROXY_DOCKER_COMMAND \&quot;\\\&quot;haproxy -f /etc/haproxy/haproxy.cfg\&quot;\\\&quot;&quot;
+    eval &quot;${SSHCMD} etcdctl set $DOCKER_CMD_KEY \&quot;\\\&quot;haproxy -f /etc/haproxy/haproxy.cfg\&quot;\\\&quot;&quot;
 else
     export RESTART_SCRIPT=&quot;/restart_nginx_docker.sh&quot;
     export CONFIG=/etc/nginx/nginx.conf
     export IMAGE=nginx:1.9.5
-    eval &quot;${SSHCMD} etcdctl set /CP/CP_PROXY_DOCKER_COMMAND \&quot;\\\&quot;nginx -g &apos;daemon off;&apos;\&quot;\\\&quot;&quot;
+    eval &quot;${SSHCMD} etcdctl set $DOCKER_CMD_KEY \&quot;\\\&quot;nginx -g &apos;daemon off;&apos;\&quot;\\\&quot;&quot;
 fi
 
-eval ${SSHCMD} etcdctl set /CP/CP_PROXY $PROXY
-eval ${SSHCMD} etcdctl set /CP/CP_PROXY_RESTART_SCRIPT $RESTART_SCRIPT
-eval ${SSHCMD} etcdctl set /CP/CP_PROXY_CONFIG_FILE $CONFIG
+eval ${SSHCMD} etcdctl set $PROXY_NAME_KEY $PROXY
+eval ${SSHCMD} etcdctl set $SCRIPT_KEY $RESTART_SCRIPT
+eval ${SSHCMD} etcdctl set $CFG_FILE_KEY $CONFIG
 eval ${SSHCMD} etcdctl set /images/proxy $IMAGE</command>
     </hudson.tasks.Shell>
     <hudson.plugins.parameterizedtrigger.TriggerBuilder plugin="parameterized-trigger@2.30">
