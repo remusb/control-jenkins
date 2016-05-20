@@ -28,7 +28,9 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>eval ${SETUPKEYS}
+      <command>#!bash -x
+
+eval ${SETUPKEYS}
 
 SCRIPT_KEY=&quot;/CP/CP_PROXY_RESTART_SCRIPT&quot;
 CFG_FILE_KEY=&quot;/CP/CP_PROXY_CONFIG_FILE&quot;
@@ -36,7 +38,7 @@ PROXY_NAME_KEY=&quot;/CP/CP_PROXY&quot;
 DOCKER_CMD_KEY=&quot;/CP/CP_PROXY_DOCKER_COMMAND&quot;
 # v3 vs v2 compat.
 eval &apos;$SSHCMD systemctl cat bootstrap|grep v3&apos;
-if [ &quot;$?&quot;==&quot;0&quot; ]; then
+if [ &quot;$?&quot; == &quot;0&quot; ]; then
     SCRIPT_KEY=&quot;/capcom/config/proxy-restart-script&quot;
     CFG_FILE_KEY=&quot;/capcom/config/proxy-config-file&quot;
     PROXY_NAME_KEY=&quot;/capcom/config/proxy&quot;
