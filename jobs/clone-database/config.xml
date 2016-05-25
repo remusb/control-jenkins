@@ -28,9 +28,22 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>DB_PASS=$(eval &apos;$SSHCMD etcdctl get /FD/FD_DB_PASSWORD&apos;)
-DB_USER=$(eval &apos;$SSHCMD etcdctl get /FD/FD_DB_USERNAME&apos;)
-DB_URL=$(eval &apos;$SSHCMD etcdctl get /FD/FD_DB_PATH&apos;) # in URL:PORT format
+      <command>#!bash -x
+PASS_KEY=&quot;/FD/FD_DB_PASSWORD&quot;
+USER_KEY=&quot;/FD/FD_DB_USERNAME&quot;
+PATH_KEY=&quot;/FD/FD_DB_PATH&quot;
+# v3 vs v2 compat.
+eval &apos;$SSHCMD systemctl cat bootstrap|grep v3&apos;
+if [ &quot;$?&quot; == &quot;0&quot; ]; then
+    PASS_KEY=&quot;/environment/RDSPASSWORD&quot;
+    USER_KEY=&quot;/flight-director/config/db-username&quot;
+    PATH_KEY=&quot;/flight-director/config/db-path&quot;
+fi
+
+# in URL:PORT format
+DB_URL=$(eval &apos;$SSHCMD etcdctl get $PATH_KEY&apos;)
+DB_USER=$(eval &apos;$SSHCMD etcdctl get $USER_KEY&apos;)
+DB_PASS=$(eval &apos;$SSHCMD etcdctl get $PASS_KEY&apos;)
 DB_HOST=${DB_URL%%:*}
 DB_PORT=${DB_URL##*:}
 
