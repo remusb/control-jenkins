@@ -39,6 +39,13 @@ if [ &quot;$?&quot; == &quot;0&quot; ]; then
     USER_KEY=&quot;/flight-director/config/db-username&quot;
     PATH_KEY=&quot;/flight-director/config/db-path&quot;
 fi
+# mesos-systemd vs ethos-systemd compat.
+eval &apos;$SSHCMD systemctl cat bootstrap|grep ethos-systemd&apos;
+if [ &quot;$?&quot; == &quot;0&quot; ]; then
+    PASS_KEY=&quot;/environment/RDSPASSWORD&quot;
+    USER_KEY=&quot;/flight-director/config/db-username&quot;
+    PATH_KEY=&quot;/flight-director/config/db-path&quot;
+fi
 
 # in URL:PORT format
 DB_URL=$(eval &apos;$SSHCMD etcdctl get $PATH_KEY&apos;)
