@@ -88,9 +88,8 @@ for unit in $(eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${FLEET_UNIT}@
         UNIT_FAILED=$?
 
         if [ &quot;$UNIT_FAILED&quot; == &quot;0&quot; ]; then
-            echo &quot;----&gt; $unit failed!&quot;
-            eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}&quot;
-            exit 1
+            echo &quot;----&gt; WARNING: $unit seems to have failed!&quot;
+            eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}&apos;&quot;
         fi
 
         eval &quot;${SSHCMD} &apos;fleetctl list-units|grep ${unit}.*active&apos;&quot;
