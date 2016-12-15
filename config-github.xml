@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson>
+    <disabledAdministrativeMonitors/>
+    <version>1.642.2</version>
+    <numExecutors>2</numExecutors>
+    <mode>NORMAL</mode>
+    <useSecurity>true</useSecurity>
+    <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+        <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Computer.Build:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Computer.Configure:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Computer.Connect:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Computer.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Computer.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Computer.Disconnect:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Hudson.Administer:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Hudson.Read:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Hudson.RunScripts:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Build:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Cancel:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Configure:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Discover:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Read:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Item.Workspace:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Run.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Run.Update:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.View.Configure:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.View.Create:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.View.Delete:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.View.Read:[CONTROL_JENKINS_ADMIN_GROUP]</permission>
+        <permission>hudson.model.Hudson.Read:[CONTROL_JENKINS_RO_GROUP]</permission>
+        <permission>hudson.model.Item.Discover:[CONTROL_JENKINS_RO_GROUP]</permission>
+        <permission>hudson.model.Item.Read:[CONTROL_JENKINS_RO_GROUP]</permission>
+        <permission>hudson.model.View.Read:[CONTROL_JENKINS_RO_GROUP]</permission>
+    </authorizationStrategy>
+    <securityRealm class="org.jenkinsci.plugins.GithubSecurityRealm">
+        <githubWebUri>[CONTROL_JENKINS_GIT_URL]</githubWebUri>
+        <githubApiUri>[CONTROL_JENKINS_GIT_API_URL]</githubApiUri>
+        <clientID>[CONTROL_JENKINS_GIT_CLIENT_ID]</clientID>
+        <clientSecret>[CONTROL_JENKINS_GIT_CLIENT_SECRET]</clientSecret>
+        <oauthScopes>[CONTROL_JENKINS_GIT_SCOPES]</oauthScopes>
+    </securityRealm>
+    <disableRememberMe>false</disableRememberMe>
+    <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
+    <workspaceDir>${ITEM_ROOTDIR}/workspace</workspaceDir>
+    <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+    <jdks/>
+    <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+    <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
+    <clouds/>
+    <quietPeriod>0</quietPeriod>
+    <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
+    <views>
+        <hudson.model.AllView>
+            <owner class="hudson" reference="../../.."/>
+            <name>All</name>
+            <filterExecutors>false</filterExecutors>
+            <filterQueue>false</filterQueue>
+            <properties class="hudson.model.View$PropertyList"/>
+        </hudson.model.AllView>
+    </views>
+    <primaryView>All</primaryView>
+    <slaveAgentPort>50000</slaveAgentPort>
+    <label></label>
+    <nodeProperties/>
+    <globalNodeProperties>
+        <hudson.slaves.EnvironmentVariablesNodeProperty>
+            <envVars serialization="custom">
+                <unserializable-parents/>
+                <tree-map>
+                    <default>
+                        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+                    </default>
+                    <int>2</int>
+                    <string>SETUPKEYS</string>
+                    <string>if [ ! -d /root/.ssh ]; then mkdir /root/.ssh; fi; cp ${JENKINS_HOME}/.ssh/id_rsa  /root/.ssh/id_rsa &amp;&amp; chown root:root /root/.ssh/id_rsa &amp;&amp; chmod 0600 /root/.ssh/id_rsa &amp;&amp; echo &quot;Host github.com\n\tStrictHostKeyChecking no\n&quot; &gt; /root/.ssh/config</string>
+                    <string>SSHCMD</string>
+                    <string>ssh ${RUNNING_USER}@${RUNNING_HOST} -o StrictHostKeyChecking=no</string>
+                </tree-map>
+            </envVars>
+        </hudson.slaves.EnvironmentVariablesNodeProperty>
+    </globalNodeProperties>
+</hudson>
